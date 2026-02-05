@@ -33,8 +33,6 @@ public class Post implements Serializable {
   private String title;
   private String summary;
   private LocalDateTime date;
-  private String author;
-  private String authorRole;
   private String imageSrc;
   private int likes;
   private int dislikes;

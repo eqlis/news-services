@@ -1,36 +1,29 @@
 package com.news.graphql.service;
 
-import com.news.graphql.config.CacheConfig;
 import com.news.graphql.model.Post;
 import com.news.graphql.repository.PostRepository;
+import com.redis.testcontainers.RedisContainer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@Import({
-  PostService.class,
-  CacheConfig.class
-})
-@ImportAutoConfiguration(classes = {
-  CacheAutoConfiguration.class,
-  RedisAutoConfiguration.class
-})
+@Testcontainers
+@SpringBootTest
 class PostServiceIT {
   @MockBean
   private PostRepository repository;
@@ -39,9 +32,18 @@ class PostServiceIT {
   @Autowired
   private CacheManager cacheManager;
 
+  @Container
+  static RedisContainer redis = new RedisContainer("redis:7.2-rc-alpine");
+
+  @DynamicPropertySource
+  static void redisProperties(DynamicPropertyRegistry registry) {
+    registry.add("spring.redis.host", redis::getHost);
+    registry.add("spring.redis.port", redis::getFirstMappedPort);
+  }
+
   @BeforeEach
   void clearCache() {
-    cacheManager.getCache("postsCache").clear();
+    Objects.requireNonNull(cacheManager.getCache("postsCache")).clear();
   }
 
   @Test

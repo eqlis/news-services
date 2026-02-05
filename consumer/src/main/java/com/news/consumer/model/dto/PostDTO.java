@@ -19,8 +19,6 @@ public class PostDTO {
   private String summary;
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   private LocalDateTime date;
-  private String author;
-  private String authorRole;
   private String imageSrc;
 
   public Post toPost() {
@@ -28,8 +26,6 @@ public class PostDTO {
       .title(title)
       .summary(summary)
       .date(date)
-      .author(author)
-      .authorRole(authorRole)
       .imageSrc(imageSrc)
       .build();
   }

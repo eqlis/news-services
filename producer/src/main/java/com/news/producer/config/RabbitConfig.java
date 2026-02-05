@@ -1,5 +1,6 @@
 package com.news.producer.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 public class RabbitConfig {
-
   @Value("${rabbit.news.topic-exchange}")
   private String topicExchangeName;
   @Value("${rabbit.news.queue}")
@@ -38,8 +38,8 @@ public class RabbitConfig {
   }
 
   @Bean
-  public MessageConverter messageConverter() {
-    return new Jackson2JsonMessageConverter();
+  public MessageConverter messageConverter(ObjectMapper objectMapper) {
+    return new Jackson2JsonMessageConverter(objectMapper);
   }
 
 }

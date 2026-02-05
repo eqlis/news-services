@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -35,7 +36,7 @@ public class PostService {
   }
 
   public Post getPost(long id) {
-    return getPosts().stream().filter(post -> post.getId() == id).findFirst().orElse(null);
+    return postRepository.findById(id).orElse(null);
   }
 
   @Transactional
@@ -65,19 +66,46 @@ public class PostService {
   }
 
   @Transactional
-  public Post like(long id, boolean value) {
-    Post post = findById(id);
-    Like like = Like.builder().value(value).build();
+  public Post like(long postId, boolean value) {
+    Post post = findById(postId);
+    User user = getCurrentUser();
 
-    like.setUser(getCurrentUser());
-    like.setPost(post);
-    if (value) {
-      post.setLikes(post.getLikes() + 1);
-    } else {
-      post.setDislikes(post.getDislikes() + 1);
+    Optional<Like> fromRepo = likeRepository.findByPostIdAndUserId(postId, user.getId());
+
+    if (fromRepo.isEmpty()) {
+      Like like = Like.builder()
+        .post(post)
+        .user(user)
+        .value(value)
+        .build();
+
+      if (value) {
+        post.setLikes(post.getLikes() + 1);
+      } else {
+        post.setDislikes(post.getDislikes() + 1);
+      }
+
+      likeRepository.save(like);
+      return postRepository.save(post);
     }
 
-    likeRepository.save(like);
+    Like existing = fromRepo.get();
+
+    if (existing.isValue() == value) {
+      return post;
+    }
+
+    if (existing.isValue()) {
+      post.setLikes(post.getLikes() - 1);
+      post.setDislikes(post.getDislikes() + 1);
+    } else {
+      post.setLikes(post.getLikes() + 1);
+      post.setDislikes(post.getDislikes() - 1);
+    }
+
+    existing.setValue(value);
+    likeRepository.save(existing);
+
     return postRepository.save(post);
   }
 

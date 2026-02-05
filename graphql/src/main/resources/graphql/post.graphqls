@@ -24,8 +24,6 @@ type Post {
   title: String!
   date: String!
   summary: String
-  author: String
-  authorRole: String
   imageSrc: String
   likes: Int
   dislikes: Int
