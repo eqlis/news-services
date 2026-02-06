@@ -249,3 +249,8 @@ The GraphQL API is secured using OAuth2 JWT (Google issuer).
 - 🖥 Web & Mobile User Interfaces
 - 🗄 Database Migrations as a Dedicated Service
 - ⚙️ Continuous Integration (CI)
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
