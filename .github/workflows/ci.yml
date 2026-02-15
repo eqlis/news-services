@@ -1,0 +1,31 @@
+name: CI Pipeline
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '20'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build producer
+        run: mvn clean verify
+        working-directory: producer
+
+      - name: Build consumer
+        run: mvn clean verify
+        working-directory: consumer
+
+      - name: Build graphql
+        run: mvn clean verify
+        working-directory: graphql
+          
