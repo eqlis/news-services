@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 @Testcontainers
 @SpringBootTest
+@ActiveProfiles("test")
 class PostServiceIT {
   @MockBean
   private PostRepository repository;
